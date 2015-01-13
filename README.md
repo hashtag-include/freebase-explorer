@@ -1,2 +1,2 @@
-# freebase-explorer
-A mobile explorer for the freebase API.
+# wikibase-explorer
+A mobile explorer for the wikibase API.
