@@ -1,7 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="Theme.Explorer" parent="Theme.AppCompat.Light">
+    <style name="Theme.Explorer" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/app_primary</item>
         <item name="colorPrimaryDark">@color/app_primary_dark</item>
         <item name="colorAccent">@color/app_accent</item>
