@@ -4,19 +4,17 @@
     tools:context=".MainActivity">
     <item android:id="@+id/action_search"
         android:title="@string/action_settings"
-        android:orderInCategory="99"
         android:icon="@drawable/ic_action_search"
-        app:showAsAction="ifRoom" />
+        android:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:showAsAction="collapseActionView|ifRoom" />
     <item android:id="@+id/action_settings"
         android:title="@string/action_settings"
-        android:orderInCategory="100"
         app:showAsAction="never" />
     <item android:id="@+id/action_about"
         android:title="@string/action_about"
-        android:orderInCategory="100"
         app:showAsAction="never" />
     <item android:id="@+id/action_donate"
         android:title="@string/action_donate"
-        android:orderInCategory="100"
         app:showAsAction="never" />
 </menu>

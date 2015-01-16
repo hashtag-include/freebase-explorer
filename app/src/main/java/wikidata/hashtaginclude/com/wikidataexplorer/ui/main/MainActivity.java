@@ -1,5 +1,9 @@
 package wikidata.hashtaginclude.com.wikidataexplorer.ui.main;
 
+import android.app.SearchManager;
+import android.content.ComponentName;
+import android.content.Context;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
@@ -11,6 +15,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
+import android.support.v7.widget.SearchView;
 
 import com.crashlytics.android.Crashlytics;
 
@@ -22,13 +27,16 @@ import wikidata.hashtaginclude.com.wikidataexplorer.ui.browse.BrowseFragment;
 import wikidata.hashtaginclude.com.wikidataexplorer.ui.news.NewsFragment;
 import wikidata.hashtaginclude.com.wikidataexplorer.ui.query.QueryFragment;
 import wikidata.hashtaginclude.com.wikidataexplorer.ui.random.RandomFragment;
+import wikidata.hashtaginclude.com.wikidataexplorer.ui.search.SearchResultsActivity;
 
 
-public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener {
+public class MainActivity extends ActionBarActivity implements AdapterView.OnItemClickListener,
+                        DrawerLayout.DrawerListener{
 
     private String[] navBarItems;
     private DrawerLayout drawerLayout;
     private ListView drawerList;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,23 +57,26 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         }
 
         // Set the toolbar as the actionbar
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbar.setNavigationIcon(android.R.drawable.dr);
+        toolbar.setNavigationIcon(R.drawable.ic_action_navigation_menu);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 if(drawerLayout.isDrawerOpen(Gravity.START)) {
                     drawerLayout.closeDrawers();
+                    toolbar.setNavigationIcon(R.drawable.ic_action_navigation_menu);
                 } else {
                     drawerLayout.openDrawer(Gravity.START);
+                    toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
                 }
             }
         });
 
         navBarItems = getResources().getStringArray(R.array.nav_bar_items);
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        drawerLayout.setDrawerListener(this);
         drawerList = (ListView) findViewById(R.id.drawer_list);
 
         drawerList.setAdapter(new ArrayAdapter<String>(this, android.R.layout.simple_list_item_1, navBarItems));
@@ -76,6 +87,13 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
+
+        SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
+        MenuItem menuItem = menu.findItem(R.id.action_search);
+        SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
+        ComponentName cn = new ComponentName(this, SearchResultsActivity.class);
+        searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
+
         return true;
     }
 
@@ -110,5 +128,25 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
                 drawerLayout.closeDrawers();
                 break;
         }
+    }
+
+    @Override
+    public void onDrawerSlide(View drawerView, float slideOffset) {
+
+    }
+
+    @Override
+    public void onDrawerOpened(View drawerView) {
+        toolbar.setNavigationIcon(R.drawable.abc_ic_ab_back_mtrl_am_alpha);
+    }
+
+    @Override
+    public void onDrawerClosed(View drawerView) {
+        toolbar.setNavigationIcon(R.drawable.ic_action_navigation_menu);
+    }
+
+    @Override
+    public void onDrawerStateChanged(int newState) {
+
     }
 }

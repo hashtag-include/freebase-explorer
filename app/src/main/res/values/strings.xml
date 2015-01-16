@@ -20,6 +20,8 @@
     <string name="action_about">About</string>
     <string name="action_donate">Donate</string>
 
+    <string name="search_hint">Search</string>
+
     <color name="app_primary">#009688</color>
     <color name="app_primary_dark">#00796B</color>
     <color name="app_accent">#D32F2F</color>
