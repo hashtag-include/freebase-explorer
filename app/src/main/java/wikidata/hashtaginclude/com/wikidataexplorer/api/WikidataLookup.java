@@ -36,11 +36,11 @@ public class WikidataLookup {
     }
 
     public static void getRecent(final Callback<RecentResponseModel> callback) {
-        wikidataService.getRecent("query", "recentchanges", "json", 25, callback);
+        wikidataService.getRecent("query", "recentchanges", "json", 25, "title|timestamp|parsedcomment", callback);
     }
 
     public static void getRecent(String timestamp, final Callback<RecentResponseModel> callback) {
-        wikidataService.getRecent("query", "recentchanges", "json", 25, timestamp, callback);
+        wikidataService.getRecent("query", "recentchanges", "json", 25, timestamp, "title|timestamp|parsedcomment", callback);
     }
 
     public static void lookupQ(int q, Callback<JSONObject> callback) {

@@ -13,21 +13,20 @@ import android.view.animation.Animation;
 import android.view.animation.Transformation;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import de.keyboardsurfer.android.widget.crouton.Crouton;
+import de.keyboardsurfer.android.widget.crouton.Style;
 import retrofit.Callback;
-import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import wikidata.hashtaginclude.com.wikidataexplorer.R;
-import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
-import wikidata.hashtaginclude.com.wikidataexplorer.WikidataUtility;
 import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
-import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataService;
-import wikidata.hashtaginclude.com.wikidataexplorer.api.SimpleXMLConverter;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentItemModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentResponseModel;
 
@@ -44,6 +43,8 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
     ArrayList<RecentItemModel> recentItemModels;
     ListView recentList;
     SwipeRefreshLayout refreshLayout;
+    TextView noContentText;
+    Style croutonStyle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -62,9 +63,15 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
         refreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.recent_swipe_refresh);
         refreshLayout.setOnRefreshListener(this);
 
+        noContentText = (TextView) root.findViewById(R.id.recent_no_content);
+
         recentList = (ListView) root.findViewById(R.id.recent_list);
         recentList.setOnScrollListener(this);
         recentList.setOnItemClickListener(this);
+
+        refreshLayout.setRefreshing(true);
+
+        croutonStyle = new Style.Builder().setBackgroundColor(R.color.app_primary_dark).setTextColor(android.R.color.white).build();
 
         getLatestUpdates();
 
@@ -75,6 +82,9 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
         WikidataLookup.getRecent(new Callback<RecentResponseModel>() {
             @Override
             public void success(RecentResponseModel recentResponseModel, Response response) {
+                if(noContentText.getVisibility()==View.VISIBLE) {
+                    noContentText.setVisibility(View.GONE);
+                }
                 if (recentResponseModel != null) {
                     for (RecentItemModel model : (ArrayList<RecentItemModel>) recentResponseModel.getQuery().getRecentChanges()) {
                         if (!recentItemModels.contains(model)) {
@@ -92,6 +102,10 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
             public void failure(RetrofitError error) {
                 error.printStackTrace();
                 refreshLayout.setRefreshing(false);
+                Crouton.makeText(getActivity(), "Could not refresh recent updates", croutonStyle, R.id.crouton_handle).show();
+                if(recentItemModels.size()==0) {
+                    noContentText.setVisibility(View.VISIBLE);
+                }
             }
         });
     }
@@ -150,16 +164,19 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         LinearLayout recentContentHidden = (LinearLayout) view.findViewById(R.id.recent_content_hidden);
+        ImageView arrow = (ImageView) view.findViewById(R.id.recent_item_arrow);
         if(recentContentHidden.getVisibility()==View.GONE) {
             expand(recentContentHidden);
+            arrow.setImageResource(R.drawable.ic_hardware_keyboard_arrow_down);
         } else {
             collapse(recentContentHidden);
+            arrow.setImageResource(R.drawable.ic_hardware_keyboard_arrow_right);
         }
     }
 
     private void expand(final View view) {
         view.measure(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
-        final int targetHeight = view.getMeasuredHeight();
+        final int targetHeight = view.getMeasuredHeight()/2;
         view.getLayoutParams().height = 0;
         view.setVisibility(View.VISIBLE);
 
@@ -179,8 +196,7 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
             }
         };
 
-        // 1dp/ms
-        animation.setDuration(350);
+        animation.setDuration(200);
         animation.setInterpolator(new AccelerateInterpolator());
         view.startAnimation(animation);
     }
@@ -205,8 +221,7 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
             }
         };
 
-        // 1dp/ms
-        animation.setDuration(350);
+        animation.setDuration(200);
         animation.setInterpolator(new AccelerateInterpolator());
         view.startAnimation(animation);
     }

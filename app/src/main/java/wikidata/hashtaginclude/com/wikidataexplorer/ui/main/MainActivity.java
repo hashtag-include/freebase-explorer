@@ -56,7 +56,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         //  else start with the news
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new RecentFragment())
+                    .add(R.id.container, new BrowseFragment())
                     .commit();
         }
 

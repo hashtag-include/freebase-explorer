@@ -2,10 +2,12 @@ package wikidata.hashtaginclude.com.wikidataexplorer.ui.recent;
 
 import android.content.Context;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.webkit.WebView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -37,7 +39,14 @@ public class RecentAdapter extends ArrayAdapter<RecentItemModel> {
             LayoutInflater inflater = LayoutInflater.from(getContext());
             convertView = inflater.inflate(R.layout.adapter_recent_item, parent, false);
             viewHolder.title = (TextView) convertView.findViewById(R.id.recent_item_title);
+            viewHolder.arrow = (ImageView) convertView.findViewById(R.id.recent_item_arrow);
             viewHolder.webView = (WebView) convertView.findViewById(R.id.recent_web);
+            viewHolder.webView .setOnTouchListener(new View.OnTouchListener() {
+                @Override
+                public boolean onTouch(View v, MotionEvent event) {
+                    return true;
+                }
+            });
             viewHolder.hiddenContent = (LinearLayout) convertView.findViewById(R.id.recent_content_hidden);
             convertView.setTag(viewHolder);
         } else {
@@ -46,6 +55,7 @@ public class RecentAdapter extends ArrayAdapter<RecentItemModel> {
 
         viewHolder.title.setText("");
         viewHolder.hiddenContent.setVisibility(View.GONE);
+        viewHolder.arrow.setImageResource(R.drawable.ic_hardware_keyboard_arrow_right);
         // check to see if the title has been looked up yet
         if(item.getTitleText()==null) {
             // we need to lookup the title
@@ -70,12 +80,13 @@ public class RecentAdapter extends ArrayAdapter<RecentItemModel> {
         } else {
             viewHolder.title.setText(item.getTitleText());
         }
-        //viewHolder.webView.loadData(item.getDescription(), "text/html; charset=UTF-8", null);
+        viewHolder.webView.loadData(item.getParsedComment(), "text/html; charset=UTF-8", null);
 
         return convertView;
     }
 
     private static class ViewHolder {
+        ImageView arrow;
         TextView title;
         LinearLayout hiddenContent;
         WebView webView;

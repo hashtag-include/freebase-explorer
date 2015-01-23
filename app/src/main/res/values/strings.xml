@@ -22,6 +22,7 @@
 
     <string name="search_hint">Search</string>
     <string name="news_title">Recently Changed</string>
+    <string name="recent_no_content">No recent changes available</string>
 
     <color name="app_primary">#009688</color>
     <color name="app_primary_dark">#00796B</color>

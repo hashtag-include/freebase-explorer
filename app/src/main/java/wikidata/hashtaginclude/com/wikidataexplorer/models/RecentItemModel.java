@@ -23,20 +23,8 @@ public class RecentItemModel {
     String titleId;
 
     @Expose
-    @SerializedName("pageid")
-    int pageId;
-
-    @Expose
-    @SerializedName("revid")
-    int revid;
-
-    @Expose
-    @SerializedName("old_revid")
-    int oldRevid;
-
-    @Expose
-    @SerializedName("rcid")
-    int rcid;
+    @SerializedName("parsedcomment")
+    String parsedComment;
 
     @Expose
     @SerializedName("timestamp")
@@ -77,36 +65,12 @@ public class RecentItemModel {
         this.titleId = titleId;
     }
 
-    public int getPageId() {
-        return pageId;
+    public String getParsedComment() {
+        return parsedComment;
     }
 
-    public void setPageId(int pageId) {
-        this.pageId = pageId;
-    }
-
-    public int getRevid() {
-        return revid;
-    }
-
-    public void setRevid(int revid) {
-        this.revid = revid;
-    }
-
-    public int getOldRevid() {
-        return oldRevid;
-    }
-
-    public void setOldRevid(int oldRevid) {
-        this.oldRevid = oldRevid;
-    }
-
-    public int getRcid() {
-        return rcid;
-    }
-
-    public void setRcid(int rcid) {
-        this.rcid = rcid;
+    public void setParsedComment(String parsedComment) {
+        this.parsedComment = parsedComment;
     }
 
     public String getTimeStamp() {
