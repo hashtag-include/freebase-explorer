@@ -1,11 +1,38 @@
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:padding="@dimen/activity_horizontal_margin"
-    tools:context=".MainActivity$PlaceholderFragment">
-    <TextView
-        android:layout_width="wrap_content"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="query"/>
-</RelativeLayout>
+        android:orientation="vertical"
+        android:background="#eee">
+        <FrameLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:padding="8dp"
+            android:background="@android:color/white">
+            <Spinner
+                android:id="@+id/query_actions"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:entries="@array/api_actions"
+                android:prompt="@string/api_prompt"/>
+        </FrameLayout>
+        <LinearLayout
+            android:id="@+id/query_actions_expanded"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:layout_margin="8dp">
+
+        </LinearLayout>
+        <Button
+            android:id="@+id/query_submit_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="8dp"
+            android:visibility="gone"
+            android:text="Submit"/>
+    </LinearLayout>
+</ScrollView>

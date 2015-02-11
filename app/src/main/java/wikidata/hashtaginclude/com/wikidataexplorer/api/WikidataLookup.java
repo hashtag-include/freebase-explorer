@@ -16,6 +16,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentResponseModel;
+import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseModel;
 
 /**
  * Created by matthewmichaud on 1/18/15.
@@ -104,5 +105,10 @@ public class WikidataLookup {
                 callback.failure(error);
             }
         });
+    }
+
+    public static void searchEntities(String search, String language,
+                                      String type, int limit, int continueQuery, Callback<SearchEntityResponseModel> callback) {
+        wikidataService.searchEntities("wbsearchentities", search, language, type, limit, continueQuery, "json", callback);
     }
 }

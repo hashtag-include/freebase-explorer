@@ -20,12 +20,15 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import de.keyboardsurfer.android.widget.crouton.Crouton;
 import de.keyboardsurfer.android.widget.crouton.Style;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import wikidata.hashtaginclude.com.wikidataexplorer.R;
+import wikidata.hashtaginclude.com.wikidataexplorer.WikidataUtility;
 import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentItemModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentResponseModel;
@@ -41,10 +44,12 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
     View root;
     RecentAdapter adapter;
     ArrayList<RecentItemModel> recentItemModels;
+    @InjectView(R.id.recent_list)
     ListView recentList;
+    @InjectView(R.id.recent_swipe_refresh)
     SwipeRefreshLayout refreshLayout;
+    @InjectView(R.id.recent_no_content)
     TextView noContentText;
-    Style croutonStyle;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -59,19 +64,14 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_recent, container, false);
+        ButterKnife.inject(this, root);
 
-        refreshLayout = (SwipeRefreshLayout) root.findViewById(R.id.recent_swipe_refresh);
         refreshLayout.setOnRefreshListener(this);
 
-        noContentText = (TextView) root.findViewById(R.id.recent_no_content);
-
-        recentList = (ListView) root.findViewById(R.id.recent_list);
         recentList.setOnScrollListener(this);
         recentList.setOnItemClickListener(this);
 
         refreshLayout.setRefreshing(true);
-
-        croutonStyle = new Style.Builder().setBackgroundColor(R.color.app_primary_dark).setTextColor(android.R.color.white).build();
 
         getLatestUpdates();
 
@@ -102,7 +102,7 @@ public class RecentFragment extends Fragment implements SwipeRefreshLayout.OnRef
             public void failure(RetrofitError error) {
                 error.printStackTrace();
                 refreshLayout.setRefreshing(false);
-                Crouton.makeText(getActivity(), "Could not refresh recent updates", croutonStyle, R.id.crouton_handle).show();
+                WikidataUtility.makeCroutonText("Could not refresh recent updates", getActivity());
                 if(recentItemModels.size()==0) {
                     noContentText.setVisibility(View.VISIBLE);
                 }

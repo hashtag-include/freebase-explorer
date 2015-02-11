@@ -27,4 +27,169 @@
     <color name="app_primary">#009688</color>
     <color name="app_primary_dark">#00796B</color>
     <color name="app_accent">#D32F2F</color>
+
+    <!--
+        api actions
+    -->
+    <string name="api_prompt"/>
+    <string-array name="api_actions">
+        <item>Choose an Action</item>
+        <!--<item>abusefiltercheckmatch</item>
+        <item>abusefilterchecksyntax</item>
+        <item>abusefilterrevalexpression</item>
+        <item>abusefilterrunblockautopromote</item>
+
+        <item>aggregategroups</item>
+        <item>antispoof</item>
+        <item>block</item>
+
+        <item>centralauthtoken</item>
+        <item>centralnoticeallocations</item>
+        <item>centralnoticebannerchoicedata</item>
+        <item>centralnoticequerycampaign</item>
+
+        <item>cirrus-config-dump</item>
+        <item>cirrus-mapping-dump</item>
+        <item>cirrus-settings-dump</item>
+
+        <item>clearhasmsp</item>
+        <item>compare</item>
+        <item>createaccount</item>
+        <item>delete</item>
+        <item>deleteglobalaccount</item>
+        <item>echomarkread</item>
+        <item>edit</item>
+        <item>editmassmessagelist</item>
+        <item>emailuser</item>
+        <item>expandtemplates</item>
+        <item>fancycaptchareload</item>
+
+        <item>featuredfeed</item>
+        <item>feedcontributions</item>
+        <item>feedrecentchanges</item>
+        <item>feedwatchlist</item>
+
+        <item>filerevert</item>
+        <item>flowthank</item>
+        <item>globalblock</item>
+        <item>globaluserights</item>
+        <item>groupreview</item>
+        <item>hardmessages</item>
+        <item>help</item>
+        <item>imagerotate</item>
+        <item>import</item>
+        <item>languagesearch</item>
+        <item>login</item>
+        <item>logout</item>
+        <item>massmessage</item>
+        <item>mobileview</item>
+        <item>move</item>
+        <item>opensearch</item>
+        <item>options</item>
+        <item>paraminfo</item>
+        <item>parse</item>
+        <item>patrol</item>
+        <item>protect</item>
+        <item>purge</item>
+        <item>query</item>
+        <item>revisiondelete</item>
+        <item>rollback</item>
+        <item>rsd</item>
+        <item>scribunto-console</item>
+        <item>setglobalaccountstatus</item>
+        <item>setnotificationtimestamp</item>
+        <item>sitematrix</item>
+        <item>spamblacklist</item>
+        <item>stashedit</item>
+        <item>templatedata</item>
+        <item>thank</item>
+        <item>titleblacklist</item>
+        <item>tokens</item>
+        <item>transcodereset</item>
+
+        <item>translatesandbox</item>
+        <item>translateuser</item>
+        <item>translationaids</item>
+        <item>translationreview</item>
+        <item>translationstash</item>
+
+        <item>ttmserver</item>
+        <item>ulslocalization</item>
+        <item>unblock</item>
+        <item>undelete</item>
+        <item>upload</item>
+
+        <item>userdailycontribs</item>
+        <item>userrights</item>
+
+        <item>visualeditor</item>
+        <item>visualeditoredit</item>
+
+        <item>watch</item>-->
+
+        <!--<item>wbavailablebadges</item>
+        <item>wbcreateclaim</item>
+        <item>wbcreateredirect</item>
+        <item>wbeditentity</item>
+        <item>wbformatvalue</item>
+        <item>wbgetclaims</item>-->
+        <item>wbgetentities</item>
+        <!--<item>wblinktitles</item>
+        <item>wbmergeitems</item>
+        <item>wbparsevalue</item>
+        <item>wbremoveclaims</item>
+        <item>wbremovequalifiers</item>
+        <item>wbremovereferences</item>-->
+        <item>wbsearchentities</item>
+        <!--<item>wbsetaliases</item>
+        <item>wbsetclaim</item>
+        <item>wbsetclaimvalue</item>
+        <item>wbsetdescription</item>
+        <item>wbsetlabel</item>
+        <item>wbsetqualifier</item>
+        <item>wbsetreference</item>
+        <item>wbsetsitelink</item>
+        <item>wbsgetsuggestions</item>-->
+    </string-array>
+
+    <string-array name="wbgetentities_params">
+        <item>ids</item>
+        <item>sites</item>
+        <item>titles</item>
+        <item>redirects</item>
+        <item>props</item>
+        <item>languages</item>
+        <item>languagefallback</item>
+        <item>normalize</item>
+        <item>ungroupedlist</item>
+        <item>sitefilter</item>
+    </string-array>
+    <string-array name="wbgetentities_defaults">
+        <item>Q2013</item>
+        <item>no default</item>
+        <item>no default</item>
+        <item>yes</item>
+        <item>info | sitelinks | aliases | labels | descriptions | claims | datatype</item>
+        <item>en</item>
+        <item>no default</item>
+        <item>no default</item>
+        <item>no default</item>
+        <item>no default</item>
+    </string-array>
+
+    <string-array name="wbsearchentities_params">
+        <item>search</item>
+        <item>language</item>
+        <item>type</item>
+        <item>limit</item>
+        <item>continue</item>
+    </string-array>
+    <string-array name="wbsearchentities_defaults">
+        <item>wikidata</item>
+        <item>en</item>
+        <item>item</item>
+        <item>7</item>
+        <item>0</item>
+    </string-array>
+
 </resources>
