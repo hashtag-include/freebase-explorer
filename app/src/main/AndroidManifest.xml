@@ -35,7 +35,7 @@
                 android:resource="@xml/searchable" />
         </activity>
 
-        <activity android:name=".ui.query.SearchEntitiesActivity"/>
+        <activity android:name=".ui.query.QueryResponseActivity"/>
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="5041430ca9035b0d60d4ece8a261896fb71e4cd8"/>
 

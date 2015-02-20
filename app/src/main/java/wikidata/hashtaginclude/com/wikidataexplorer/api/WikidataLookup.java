@@ -15,6 +15,7 @@ import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
+import wikidata.hashtaginclude.com.wikidataexplorer.models.GetEntityResponseModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentResponseModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseModel;
 
@@ -110,5 +111,12 @@ public class WikidataLookup {
     public static void searchEntities(String search, String language,
                                       String type, int limit, int continueQuery, Callback<SearchEntityResponseModel> callback) {
         wikidataService.searchEntities("wbsearchentities", search, language, type, limit, continueQuery, "json", callback);
+    }
+
+    public static void getEntities(String ids, String sites, String titles, String redirects, String props,
+                                   String languages, String languageFallback, String normalize, String ungroupedlist,
+                                   String siteFilter, Callback<JsonElement> callback) {
+        wikidataService.getEntities("wbgetentities", ids, sites, titles, redirects, props, languages, languageFallback, normalize,
+                ungroupedlist, siteFilter, "json", callback);
     }
 }

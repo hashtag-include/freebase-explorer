@@ -5,6 +5,7 @@ import com.google.gson.JsonElement;
 import retrofit.Callback;
 import retrofit.http.GET;
 import retrofit.http.Query;
+import wikidata.hashtaginclude.com.wikidataexplorer.models.GetEntityResponseModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentResponseModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseModel;
 
@@ -30,4 +31,20 @@ public interface WikidataService {
                         @Query("continue") int continueQuery,
                         @Query("format") String format,
                         Callback<SearchEntityResponseModel> callback);
+
+    @GET("/w/api.php")
+    void getEntities(
+            @Query("action") String action,
+            @Query("ids") String ids,
+            @Query("sites") String sites,
+            @Query("titles") String titles,
+            @Query("redirects") String redirects,
+            @Query("props") String props,
+            @Query("languages") String languages,
+            @Query("languagefallback") String languageFallback,
+            @Query("normalize") String normalize,
+            @Query("ungroupedlist") String ungroupedList,
+            @Query("sitefilter") String siteFilter,
+            @Query("format") String format,
+            Callback<JsonElement> callback);
 }

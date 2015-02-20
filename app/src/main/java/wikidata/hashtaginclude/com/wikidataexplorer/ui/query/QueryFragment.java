@@ -15,9 +15,13 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.google.gson.JsonElement;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.ButterKnife;
+import butterknife.InjectView;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
@@ -32,8 +36,12 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
     private final static String TAG = "QueryFragment";
 
     View root;
+
+    @InjectView(R.id.query_actions)
     Spinner actionSpinner;
+    @InjectView(R.id.query_actions_expanded)
     LinearLayout actionsExpanded;
+    @InjectView(R.id.query_submit_button)
     Button submitButton;
     List<View> paramViews;
 
@@ -48,15 +56,12 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         root = inflater.inflate(R.layout.fragment_query, container, false);
+        ButterKnife.inject(this, root);
 
         paramViews = new ArrayList<View>();
 
-        submitButton = (Button) root.findViewById(R.id.query_submit_button);
         submitButton.setOnClickListener(this);
 
-        actionsExpanded = (LinearLayout) root.findViewById(R.id.query_actions_expanded);
-
-        actionSpinner = (Spinner) root.findViewById(R.id.query_actions);
         actionSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -141,17 +146,84 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
     @Override
     public void onClick(View v) {
         if(submitButton.getVisibility()==View.VISIBLE) {
+            String language = "";
             switch(actionSpinner.getSelectedItemPosition()) {
                 case 0:
                     break;
                 case 1:
+                    String ids = ((EditText)paramViews.get(0)).getText().toString();
+                    if(ids==null || ids.length()==0) {
+                        ids = ((EditText)paramViews.get(0)).getHint().toString();
+                    }
+                    ids = ids.replace(',', '|');
+                    ids = ids.replace(" ", "");
+                    String sites = ((EditText)paramViews.get(1)).getText().toString();
+                    if(sites==null || sites.length()==0) {
+                        sites = "";
+                    }
+                    String titles = ((EditText)paramViews.get(2)).getText().toString();
+                    if(titles==null || titles.length()==0) {
+                        titles = "";
+                    }
+                    String redirects = ((EditText)paramViews.get(3)).getText().toString();
+                    if(redirects==null || redirects.length()==0) {
+                        redirects = ((EditText)paramViews.get(3)).getHint().toString();
+                    }
+                    String props = ((EditText)paramViews.get(4)).getText().toString();
+                    if(props==null || props.length()==0) {
+                        props = ((EditText)paramViews.get(4)).getHint().toString();
+                    }
+                    props = props.replace(',', '|');
+                    props = props.replace(" ", "");
+                    language = ((EditText)paramViews.get(5)).getText().toString();
+                    if(language==null || language.length()==0) {
+                        language = ((EditText)paramViews.get(5)).getHint().toString();
+                    }
+                    String languageFallback = ((EditText)paramViews.get(6)).getText().toString();
+                    if(languageFallback==null || languageFallback.length()==0) {
+                        languageFallback = "";
+                    }
+                    String normalize = ((EditText)paramViews.get(7)).getText().toString();
+                    if(normalize==null || normalize.length()==0) {
+                        normalize = "";
+                    }
+                    String ungroupedList = ((EditText)paramViews.get(8)).getText().toString();
+                    if(ungroupedList==null || ungroupedList.length()==0) {
+                        ungroupedList = "";
+                    }
+                    String siteFilter = ((EditText)paramViews.get(9)).getText().toString();
+                    if(siteFilter==null || siteFilter.length()==0) {
+                        siteFilter = "";
+                    }
+                    WikidataLookup.getEntities(
+                            ids, sites, titles, redirects, props, language, languageFallback, normalize, ungroupedList, siteFilter,
+                            new Callback<JsonElement>() {
+                                @Override
+                                public void success(JsonElement getEntityResponseModel, Response response) {
+                                    WikidataLog.d(TAG, "SUCCESS");
+                                    if (getEntityResponseModel != null) {
+                                        // launch a new activity with the model
+                                        Intent intent = new Intent(QueryFragment.this.getActivity(), QueryResponseActivity.class);
+                                        intent.putExtra("responseModel", getEntityResponseModel.toString());
+                                        //intent.putExtra("type", QueryResponseActivity.ResponseType.GET_ENTITY_RESPONSE.ordinal());
+                                        QueryFragment.this.getActivity().startActivity(intent);
+                                    }
+                                }
+
+                                @Override
+                                public void failure(RetrofitError error) {
+                                    WikidataLog.e(TAG, "Failed to get entities", error);
+                                    WikidataUtility.makeCroutonText("Could not complete request", QueryFragment.this.getActivity());
+                                }
+                            }
+                    );
                     break;
                 case 2:
                     String search = ((EditText)paramViews.get(0)).getText().toString();
                     if(search==null || search.length()==0) {
                         search = ((EditText)paramViews.get(0)).getHint().toString();
                     }
-                    String language = ((EditText)paramViews.get(1)).getText().toString();
+                    language = ((EditText)paramViews.get(1)).getText().toString();
                     if(language==null || language.length()==0) {
                         language = ((EditText)paramViews.get(1)).getHint().toString();
                     }
@@ -176,8 +248,9 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
                                 public void success(SearchEntityResponseModel searchEntityResponseModel, Response response) {
                                     if(searchEntityResponseModel!=null) {
                                         // launch a new activity with the model
-                                        Intent intent = new Intent(QueryFragment.this.getActivity(), SearchEntitiesActivity.class);
+                                        Intent intent = new Intent(QueryFragment.this.getActivity(), QueryResponseActivity.class);
                                         intent.putExtra("responseModel", searchEntityResponseModel);
+                                        intent.putExtra("type", QueryResponseActivity.ResponseType.SEARCH_ENTITY_RESPONSE.ordinal());
                                         QueryFragment.this.getActivity().startActivity(intent);
                                     }
                                 }

@@ -7,12 +7,15 @@ import android.view.View;
 
 import wikidata.hashtaginclude.com.wikidataexplorer.R;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseModel;
-import wikidata.hashtaginclude.com.wikidataexplorer.ui.browse.BrowseFragment;
 
 /**
  * Created by matthewmichaud on 2/10/15.
  */
-public class SearchEntitiesActivity extends ActionBarActivity {
+public class QueryResponseActivity extends ActionBarActivity {
+
+    public enum ResponseType {
+        SEARCH_ENTITY_RESPONSE
+    }
 
     Toolbar toolbar;
 
@@ -20,14 +23,6 @@ public class SearchEntitiesActivity extends ActionBarActivity {
         super.onCreate(savedInstanceState);
 
         setContentView(R.layout.activity_search_entities);
-        SearchEntityResponseModel model = (SearchEntityResponseModel)(getIntent().getSerializableExtra("responseModel"));
-
-        if (savedInstanceState == null) {
-            getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, SearchEntitiesFragment.newInstance(model))
-                    .commit();
-        }
-
         // Set the toolbar as the actionbar
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -40,6 +35,23 @@ public class SearchEntitiesActivity extends ActionBarActivity {
             }
         });
 
-        toolbar.setTitle(model.getSearchInfo().getSearch());
+        int type = getIntent().getIntExtra("type", ResponseType.SEARCH_ENTITY_RESPONSE.ordinal());
+        if(type == ResponseType.SEARCH_ENTITY_RESPONSE.ordinal()) {
+            SearchEntityResponseModel model = (SearchEntityResponseModel)(getIntent().getSerializableExtra("responseModel"));
+            if (savedInstanceState == null) {
+                getSupportFragmentManager().beginTransaction()
+                        .add(R.id.container, QueryResponseFragment.newInstance(model, type))
+                        .commit();
+            }
+            toolbar.setTitle(model.getSearchInfo().getSearch());
+        }
+
+
+
+
+
+
+
+
     }
 }

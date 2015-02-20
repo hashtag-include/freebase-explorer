@@ -17,9 +17,9 @@ import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseM
 /**
  * Created by matthewmichaud on 2/10/15.
  */
-public class SearchEntitiesFragment extends Fragment {
+public class QueryResponseFragment extends Fragment {
 
-    SearchEntityResponseModel model;
+    int type;
 
     View root;
 
@@ -28,10 +28,11 @@ public class SearchEntitiesFragment extends Fragment {
     @InjectView(R.id.search_entities_list)
     ListView listView;
 
-    public static SearchEntitiesFragment newInstance(SearchEntityResponseModel model) {
-        SearchEntitiesFragment fragment = new SearchEntitiesFragment();
+    public static QueryResponseFragment newInstance(SearchEntityResponseModel model, int type) {
+        QueryResponseFragment fragment = new QueryResponseFragment();
         Bundle bundle = new Bundle();
         bundle.putSerializable("responseModel", model);
+        bundle.putInt("type", type);
         fragment.setArguments(bundle);
         return fragment;
     }
@@ -40,7 +41,7 @@ public class SearchEntitiesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        model = (SearchEntityResponseModel) getArguments().getSerializable("responseModel");
+        type = getArguments().getInt("type");
     }
 
     @Override
@@ -48,8 +49,11 @@ public class SearchEntitiesFragment extends Fragment {
         root = inflater.inflate(R.layout.fragment_search_entities, container, false);
         ButterKnife.inject(this, root);
 
-        SearchEntitiesAdapter adapter = new SearchEntitiesAdapter(getActivity(), model.getSearchModels());
-        listView.setAdapter(adapter);
+        if(type == QueryResponseActivity.ResponseType.SEARCH_ENTITY_RESPONSE.ordinal()) {
+            SearchEntityResponseModel model = (SearchEntityResponseModel) getArguments().getSerializable("responseModel");
+            SearchEntitiesAdapter adapter = new SearchEntitiesAdapter(getActivity(), model.getSearchModels());
+            listView.setAdapter(adapter);
+        }
 
         return root;
     }
