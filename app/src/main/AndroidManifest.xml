@@ -36,6 +36,7 @@
         </activity>
 
         <activity android:name=".ui.query.QueryResponseActivity"/>
+        <activity android:name=".ui.entity.EntityActivity"/>
 
         <meta-data android:name="com.crashlytics.ApiKey" android:value="5041430ca9035b0d60d4ece8a261896fb71e4cd8"/>
 

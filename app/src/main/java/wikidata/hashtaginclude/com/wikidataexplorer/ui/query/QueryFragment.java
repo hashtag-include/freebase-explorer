@@ -16,9 +16,12 @@ import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import butterknife.ButterKnife;
 import butterknife.InjectView;
@@ -30,6 +33,7 @@ import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
 import wikidata.hashtaginclude.com.wikidataexplorer.WikidataUtility;
 import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseModel;
+import wikidata.hashtaginclude.com.wikidataexplorer.ui.entity.EntityActivity;
 
 public class QueryFragment extends Fragment implements View.OnClickListener {
 
@@ -200,11 +204,18 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
                             new Callback<JsonElement>() {
                                 @Override
                                 public void success(JsonElement getEntityResponseModel, Response response) {
-                                    WikidataLog.d(TAG, "SUCCESS");
                                     if (getEntityResponseModel != null) {
+                                        JsonObject entities = getEntityResponseModel.getAsJsonObject().getAsJsonObject("entities");
+                                        ArrayList<String> responses = new ArrayList<String>();
+                                        Iterator<Map.Entry<String, JsonElement>> iterator = entities.entrySet().iterator();
+                                        while(iterator.hasNext()) {
+                                            Map.Entry<String, JsonElement> entry = iterator.next();
+                                            responses.add(entry.getValue().toString());
+                                        }
+
                                         // launch a new activity with the model
-                                        Intent intent = new Intent(QueryFragment.this.getActivity(), QueryResponseActivity.class);
-                                        intent.putExtra("responseModel", getEntityResponseModel.toString());
+                                        Intent intent = new Intent(QueryFragment.this.getActivity(), EntityActivity.class);
+                                        intent.putExtra("responses", responses);
                                         //intent.putExtra("type", QueryResponseActivity.ResponseType.GET_ENTITY_RESPONSE.ordinal());
                                         QueryFragment.this.getActivity().startActivity(intent);
                                     }

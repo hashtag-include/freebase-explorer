@@ -13,6 +13,8 @@ import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseM
  */
 public class QueryResponseActivity extends ActionBarActivity {
 
+    private static final String TAG = "[QueryResponseActivity]";
+
     public enum ResponseType {
         SEARCH_ENTITY_RESPONSE
     }
@@ -45,13 +47,5 @@ public class QueryResponseActivity extends ActionBarActivity {
             }
             toolbar.setTitle(model.getSearchInfo().getSearch());
         }
-
-
-
-
-
-
-
-
     }
 }

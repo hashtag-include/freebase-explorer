@@ -11,7 +11,7 @@ import android.util.Log;
  */
 public class SearchResultsActivity extends Activity {
 
-    private static final String TAG = "WE [SearchResultsActivity]";
+    private static final String TAG = "[SearchResultsActivity]";
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
