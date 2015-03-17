@@ -1,2 +1,2 @@
 # wikibase-explorer
-A mobile explorer for the wikibase API.
+An Android explorer for the wikibase API.
