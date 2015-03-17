@@ -1,11 +1,14 @@
 package wikidata.hashtaginclude.com.wikidataexplorer.api;
 
+import android.view.View;
+
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
 
 import org.json.JSONObject;
 
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -16,6 +19,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.GetEntityResponseModel;
+import wikidata.hashtaginclude.com.wikidataexplorer.models.LabelListResponseModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentResponseModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseModel;
 
@@ -28,6 +32,8 @@ public class WikidataLookup {
 
     static WikidataService wikidataService;
 
+    static Map<String, String> properties;
+
     static {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://www.wikidata.org")
@@ -35,6 +41,8 @@ public class WikidataLookup {
                 .build();
 
         wikidataService = restAdapter.create(WikidataService.class);
+
+        properties = new HashMap<String, String>();
     }
 
     public static void getRecent(final Callback<RecentResponseModel> callback) {
@@ -45,16 +53,23 @@ public class WikidataLookup {
         wikidataService.getRecent("query", "recentchanges", "json", 25, timestamp, "title|timestamp|parsedcomment", callback);
     }
 
-    public static void lookupQ(int q, Callback<JSONObject> callback) {
-
-    }
-
-    public static void lookupP(int p, Callback<JSONObject> callback) {
-
-    }
-
     public static void getLabel(String q, Callback<String> callback) {
         getLabel(q, "en", callback);
+    }
+
+    public static void getLabel(String q, final int position, final Object viewHolder, final Callback<LabelListResponseModel> callback) {
+        getLabel(q, "en", new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                LabelListResponseModel model = new LabelListResponseModel(s, position, viewHolder);
+                callback.success(model, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
     }
 
     public static void getLabel(final String q, final String language, final Callback<String> callback) {
@@ -62,24 +77,24 @@ public class WikidataLookup {
             @Override
             public void success(JsonElement jsonElement, Response response) {
                 JsonObject jsonObject = jsonElement.getAsJsonObject();
-                if(jsonObject==null || jsonObject.getAsJsonObject("entities")==null) {
+                if (jsonObject == null || jsonObject.getAsJsonObject("entities") == null) {
                     callback.success("", response);
                     return;
                 }
                 JsonObject entity = jsonObject.getAsJsonObject("entities").getAsJsonObject(q);
 
-                if(entity!=null) {
+                if (entity != null) {
                     JsonObject labels = entity.getAsJsonObject("labels");
-                    if(labels==null) {
+                    if (labels == null) {
                         callback.success("", response);
                         return;
                     }
                     JsonObject labelLang = labels.getAsJsonObject(language);
-                    if(labelLang==null) {
+                    if (labelLang == null) {
                         // couldnt find it in the language you want, just giving you the first one then
                         Set<Map.Entry<String, JsonElement>> set = labels.entrySet();
                         Iterator<Map.Entry<String, JsonElement>> i = set.iterator();
-                        while(i.hasNext()) {
+                        while (i.hasNext()) {
                             Map.Entry<String, JsonElement> entry = i.next();
                             JsonObject obj = entry.getValue().getAsJsonObject();
                             JsonPrimitive prim = obj.getAsJsonPrimitive("value");
@@ -102,10 +117,14 @@ public class WikidataLookup {
 
             @Override
             public void failure(RetrofitError error) {
-                WikidataLog.e(TAG, "Failed to get label for: "+q, error.getCause());
+                WikidataLog.e(TAG, "Failed to get label for: " + q, error.getCause());
                 callback.failure(error);
             }
         });
+    }
+
+    public static void searchEntities(String search, Callback<SearchEntityResponseModel> callback) {
+        wikidataService.searchEntities("wbsearchentities", search, "en", "item", 1, 0, "json", callback);
     }
 
     public static void searchEntities(String search, String language,
@@ -118,5 +137,24 @@ public class WikidataLookup {
                                    String siteFilter, Callback<JsonElement> callback) {
         wikidataService.getEntities("wbgetentities", ids, sites, titles, redirects, props, languages, languageFallback, normalize,
                 ungroupedlist, siteFilter, "json", callback);
+    }
+
+    public static void getProperty(final String id, final Callback<String> callback) {
+        if (properties.containsKey(id)) {
+            callback.success(properties.get(properties), null);
+            return;
+        }
+
+        getLabel(id, "en", new Callback<String>() {
+            @Override
+            public void success(String s, Response response) {
+                callback.success(s, response);
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                callback.failure(error);
+            }
+        });
     }
 }

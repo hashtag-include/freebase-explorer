@@ -23,6 +23,9 @@ public interface WikidataService {
     void getEntity(@Query("action") String action, @Query("ids") String id, @Query("uselang") String useLang, @Query("format") String format, Callback<JsonElement> callback);
 
     @GET("/w/api.php")
+    JsonElement getEntity(@Query("action") String action, @Query("ids") String id, @Query("uselang") String useLang, @Query("format") String format);
+
+    @GET("/w/api.php")
     void searchEntities(@Query("action") String action,
                         @Query("search") String search,
                         @Query("language") String language,
@@ -31,6 +34,15 @@ public interface WikidataService {
                         @Query("continue") int continueQuery,
                         @Query("format") String format,
                         Callback<SearchEntityResponseModel> callback);
+
+    @GET("/w/api.php")
+    String searchEntities(@Query("action") String action,
+                        @Query("search") String search,
+                        @Query("language") String language,
+                        @Query("type") String type,
+                        @Query("limit") int limit,
+                        @Query("continue") int continueQuery,
+                        @Query("format") String format);
 
     @GET("/w/api.php")
     void getEntities(

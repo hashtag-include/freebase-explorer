@@ -3,6 +3,7 @@ package wikidata.hashtaginclude.com.wikidataexplorer.ui.entity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -46,6 +47,15 @@ public class EntityListFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         responses = this.getArguments().getStringArrayList("responses");
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle("Showing "+responses.size()
+                + (responses.size() == 1 ? " entity" : " entities"));
+        ((ActionBarActivity) getActivity()).getSupportActionBar().setSubtitle("");
     }
 
     @Override

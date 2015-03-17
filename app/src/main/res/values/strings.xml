@@ -165,12 +165,12 @@
         <item>sitefilter</item>
     </string-array>
     <string-array name="wbgetentities_defaults">
-        <item>Q2013</item>
+        <item>Q2013, Q870</item>
         <item>no default</item>
         <item>no default</item>
         <item>yes</item>
         <item>info | sitelinks | aliases | labels | descriptions | claims | datatype</item>
-        <item>en</item>
+        <item>en, es, fr</item>
         <item>no default</item>
         <item>no default</item>
         <item>no default</item>

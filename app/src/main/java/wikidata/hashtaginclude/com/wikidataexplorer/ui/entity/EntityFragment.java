@@ -3,23 +3,35 @@ package wikidata.hashtaginclude.com.wikidataexplorer.ui.entity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.support.v7.app.ActionBarActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import butterknife.ButterKnife;
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
 import wikidata.hashtaginclude.com.wikidataexplorer.R;
+import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
+import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
+import wikidata.hashtaginclude.com.wikidataexplorer.models.EntityModel;
 
 /**
  * Created by matthewmichaud on 2/17/15.
  */
 public class EntityFragment extends Fragment {
 
-    private static final String TAG = "[EntityFragment]";
+    private static final String TAG = "EntityFragment";
 
     View root;
 
     String content;
+
+    EntityModel entityModel;
 
     public static EntityFragment newInstance(String content) {
         EntityFragment fragment = new EntityFragment();
@@ -34,6 +46,27 @@ public class EntityFragment extends Fragment {
         super.onCreate(savedInstanceState);
 
         content = this.getArguments().getString("content");
+        try {
+            JSONObject jsonObj = new JSONObject(content);
+
+            entityModel = EntityModel.parse(jsonObj);
+
+            ((ActionBarActivity) getActivity()).getSupportActionBar().setTitle(entityModel.getTitle());
+
+            if(entityModel.getLabels().length > 0) {
+                String subtitle = entityModel.getLabels()[0].getValue();
+                for(int i = 1; i < entityModel.getLabels().length; i++) {
+                    subtitle+=", ";
+                    subtitle+=entityModel.getLabels()[i].getValue();
+                }
+                ((ActionBarActivity) getActivity()).getSupportActionBar().setSubtitle(subtitle);
+            }
+
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
     }
 
     @Override

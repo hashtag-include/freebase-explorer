@@ -18,11 +18,15 @@ import de.keyboardsurfer.android.widget.crouton.Style;
 public class WikidataUtility {
 
     static Style croutonStyle;
-    {
+
+    private static void makeStyle() {
         croutonStyle = new Style.Builder().setBackgroundColor(R.color.app_primary_dark).setTextColor(android.R.color.white).build();
     }
 
     public static void makeCroutonText(String text, Activity activity) {
+        if(croutonStyle == null) {
+            makeStyle();
+        }
         Crouton.makeText(activity, text, croutonStyle, R.id.crouton_handle).show();
     }
 

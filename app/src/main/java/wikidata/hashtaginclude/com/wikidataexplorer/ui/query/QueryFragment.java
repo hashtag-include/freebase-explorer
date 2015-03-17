@@ -183,6 +183,8 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
                     if(language==null || language.length()==0) {
                         language = ((EditText)paramViews.get(5)).getHint().toString();
                     }
+                    language = language.replace(',', '|');
+                    language = language.replace(" ", "");
                     String languageFallback = ((EditText)paramViews.get(6)).getText().toString();
                     if(languageFallback==null || languageFallback.length()==0) {
                         languageFallback = "";
@@ -199,6 +201,19 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
                     if(siteFilter==null || siteFilter.length()==0) {
                         siteFilter = "";
                     }
+
+                    WikidataLookup.getLabel("words", new Callback<String>() {
+                        @Override
+                        public void success(String s, Response response) {
+
+                        }
+
+                        @Override
+                        public void failure(RetrofitError error) {
+
+                        }
+                    });
+
                     WikidataLookup.getEntities(
                             ids, sites, titles, redirects, props, language, languageFallback, normalize, ungroupedList, siteFilter,
                             new Callback<JsonElement>() {
@@ -216,7 +231,6 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
                                         // launch a new activity with the model
                                         Intent intent = new Intent(QueryFragment.this.getActivity(), EntityActivity.class);
                                         intent.putExtra("responses", responses);
-                                        //intent.putExtra("type", QueryResponseActivity.ResponseType.GET_ENTITY_RESPONSE.ordinal());
                                         QueryFragment.this.getActivity().startActivity(intent);
                                     }
                                 }
@@ -237,6 +251,11 @@ public class QueryFragment extends Fragment implements View.OnClickListener {
                     language = ((EditText)paramViews.get(1)).getText().toString();
                     if(language==null || language.length()==0) {
                         language = ((EditText)paramViews.get(1)).getHint().toString();
+                    }
+                    if(language.length()>2) {
+                        // error, should only have 1 langauge
+                        WikidataUtility.makeCroutonText("Only input 1 language", getActivity());
+                        return;
                     }
                     String type = ((EditText)paramViews.get(2)).getText().toString();
                     if(type==null || type.length()==0) {
