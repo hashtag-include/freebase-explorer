@@ -8,6 +8,7 @@ import com.google.gson.JsonPrimitive;
 
 import org.json.JSONObject;
 
+import java.util.AbstractMap;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
@@ -139,21 +140,42 @@ public class WikidataLookup {
                 ungroupedlist, siteFilter, "json", callback);
     }
 
-    public static void getProperty(final String id, final Callback<String> callback) {
-        if (properties.containsKey(id)) {
-            callback.success(properties.get(properties), null);
+    public static void getProperty(final String propertyId, final String valueId, final Callback<AbstractMap.SimpleEntry<String, String>> callback) {
+        if (properties.containsKey(propertyId)) {
+            getPropertyValue(properties.get(propertyId), valueId, callback);
+            //callback.success(properties.get(properties), null);
             return;
         }
 
-        getLabel(id, "en", new Callback<String>() {
+        getLabel(propertyId, "en", new Callback<String>() {
             @Override
             public void success(String s, Response response) {
-                callback.success(s, response);
+                //callback.success(s, response);
+                getPropertyValue(s, valueId, callback);
             }
 
             @Override
             public void failure(RetrofitError error) {
                 callback.failure(error);
+            }
+        });
+    }
+
+    private static void getPropertyValue(final String property, final String valueId, final Callback<AbstractMap.SimpleEntry<String, String>> callback) {
+        WikidataLookup.getLabel("Q" + valueId, new Callback<String>() {
+            @Override
+            public void success(String label, Response response) {
+                if (label != null) {
+                    callback.success(new AbstractMap.SimpleEntry<String, String>(property, label), response);
+                    WikidataLog.d(TAG, "property value = " + label);
+                } else {
+                    WikidataLog.e(TAG, "response was null");
+                }
+            }
+
+            @Override
+            public void failure(RetrofitError error) {
+                WikidataLog.e(TAG, "Could not get value from Q"+valueId, error);
             }
         });
     }

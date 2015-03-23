@@ -6,6 +6,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.AbstractMap;
 import java.util.Iterator;
 
 import retrofit.Callback;
@@ -42,7 +43,7 @@ public class EntityModel {
         entityModel.setLastrevid(entityJSON.getInt("lastrevid"));
         entityModel.setModified(entityJSON.getString("modified"));
         entityModel.setId(entityJSON.getString("id"));
-        entityModel.setType(entityJSON.getString("type")); 
+        entityModel.setType(entityJSON.getString("type"));
 
         int i = 0;
 
@@ -101,13 +102,13 @@ public class EntityModel {
             ClaimModel claim = ClaimModel.parse(claims.getJSONObject(r));
             claimModels[r] = claim;
 
-
-
             if(claim.getMainsnak().getDatatype().equals("wikibase-item")) {
-                WikidataLookup.getProperty(claim.getMainsnak().getProperty(), new Callback<String>() {
+                WikidataLookup.getProperty(claim.getMainsnak().getProperty(), ((ClaimModel.DataValueWikibaseItem)(claim.getMainsnak().
+                        getDataValue())).getNumericId()+"",
+                        new Callback<AbstractMap.SimpleEntry<String, String>>() {
                     @Override
-                    public void success(String s, Response response) {
-                        WikidataLog.d(TAG, "property: " + s);
+                    public void success(AbstractMap.SimpleEntry<String, String> entry, Response response) {
+                        WikidataLog.d(TAG, "property: " + entry.getKey()+", value: "+entry.getValue());
                     }
 
                     @Override
@@ -116,24 +117,13 @@ public class EntityModel {
                     }
                 });
 
-                WikidataLookup.getLabel("Q" + claim.getMainsnak().getDataValue().getValue().getNumericId(), new Callback<String>() {
-                    @Override
-                    public void success(String label, Response response) {
-                        if (label != null) {
-                            WikidataLog.d(TAG, "propertyid = " + label);
-                        } else {
-                            WikidataLog.e(TAG, "response was null");
-                        }
-                    }
 
-                    @Override
-                    public void failure(RetrofitError error) {
-                        WikidataLog.e(TAG, "Could not get propertyid", error);
-                    }
-                });
             }
         }
         entityModel.setClaimModels(claimModels);
+
+
+
         return entityModel;
     }
 
