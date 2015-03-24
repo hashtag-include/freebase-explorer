@@ -1,10 +1,11 @@
-package wikidata.hashtaginclude.com.wikidataexplorer.ui.entity;
+package wikidata.hashtaginclude.com.wikidataexplorer.ui.browse;
 
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.util.List;
@@ -18,16 +19,13 @@ import wikidata.hashtaginclude.com.wikidataexplorer.R;
 import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
 import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.LabelListResponseModel;
-import wikidata.hashtaginclude.com.wikidataexplorer.models.SearchEntityResponseModel;
 
 /**
- * Created by matthewmichaud on 2/22/15.
+ * Created by matthewmichaud on 3/23/15.
  */
-public class EntityListAdapter extends ArrayAdapter<String> {
-    private static final String TAG = "[EntityListAdapter]";
-
-    public EntityListAdapter(Context context, List<String> objects) {
-        super(context, R.layout.adapter_entity_item, objects);
+public class CategoryAdapter extends ArrayAdapter<String> {
+    public CategoryAdapter(Context context, List<String> objects) {
+        super(context, R.layout.adapter_category, objects);
     }
 
     @Override
@@ -35,37 +33,28 @@ public class EntityListAdapter extends ArrayAdapter<String> {
         String item = getItem(position);
 
         ViewHolder viewHolder;
-        if(convertView == null) {
+        if (convertView == null) {
             LayoutInflater inflater = LayoutInflater.from(getContext());
-            convertView = inflater.inflate(R.layout.adapter_entity_item, parent, false);
+            convertView = inflater.inflate(R.layout.adapter_category, parent, false);
             viewHolder = new ViewHolder(convertView);
             convertView.setTag(viewHolder);
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
 
-        viewHolder.label.setText(item);
-        WikidataLookup.getLabel(item, position, viewHolder, new Callback<LabelListResponseModel>() {
+        viewHolder.categoryButton.setText(item);
+        viewHolder.categoryButton.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void success(LabelListResponseModel model, Response response) {
-                String item = getItem(model.getPosition());
-                ((ViewHolder)model.getViewHolder()).label.setText(item + " (" + model.getLabel() + ")");
-            }
+            public void onClick(View v) {
 
-            @Override
-            public void failure(RetrofitError error) {
-                WikidataLog.e(TAG, "Could not get label", error);
             }
         });
-
-
-
         return convertView;
     }
 
     protected static class ViewHolder {
-        @InjectView(R.id.entity_label)
-        TextView label;
+        @InjectView(R.id.category_list_text)
+        Button categoryButton;
 
         public ViewHolder(View root) {
             ButterKnife.inject(this, root);
