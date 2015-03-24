@@ -3,6 +3,11 @@ package wikidata.hashtaginclude.com.wikidataexplorer.models;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import retrofit.Callback;
+import retrofit.RetrofitError;
+import retrofit.client.Response;
+import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
+
 /**
  * Created by matthewmichaud on 3/3/15.
  */
@@ -264,6 +269,7 @@ public class ClaimModel {
     public static class DataValueWikibaseItem extends DataValue {
         String entityType;
         int numericId;
+        String numericText;
 
         public DataValueWikibaseItem() {
         }
@@ -272,6 +278,18 @@ public class ClaimModel {
             this.entityType = entityType;
             this.numericId = numericId;
             this.type = type;
+
+            WikidataLookup.getLabel(Integer.toString(numericId), new Callback<String>() {
+                @Override
+                public void success(String s, Response response) {
+                    numericText = s;
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
         }
 
         public static DataValueWikibaseItem parse(JSONObject dataValue) throws JSONException {
@@ -307,6 +325,7 @@ public class ClaimModel {
     public static class Mainsnak {
         String snaktype;
         String property;
+        String propertyText;
         String datatype;
         DataValue dataValue;
 
@@ -347,6 +366,18 @@ public class ClaimModel {
             this.property = property;
             this.datatype = datatype;
             this.dataValue = dataValue;
+
+            WikidataLookup.getProperty(property, new Callback<String>() {
+                @Override
+                public void success(String s, Response response) {
+                    propertyText = s;
+                }
+
+                @Override
+                public void failure(RetrofitError error) {
+
+                }
+            });
         }
 
         public String getSnaktype() {
@@ -363,6 +394,10 @@ public class ClaimModel {
 
         public void setProperty(String property) {
             this.property = property;
+        }
+
+        public String getPropertyText() {
+            return propertyText;
         }
 
         public String getDatatype() {

@@ -140,18 +140,16 @@ public class WikidataLookup {
                 ungroupedlist, siteFilter, "json", callback);
     }
 
-    public static void getProperty(final String propertyId, final String valueId, final Callback<AbstractMap.SimpleEntry<String, String>> callback) {
+    public static void getProperty(final String propertyId, final Callback<String> callback) {
         if (properties.containsKey(propertyId)) {
-            getPropertyValue(properties.get(propertyId), valueId, callback);
-            //callback.success(properties.get(properties), null);
+            callback.success(properties.get(properties), null);
             return;
         }
 
         getLabel(propertyId, "en", new Callback<String>() {
             @Override
             public void success(String s, Response response) {
-                //callback.success(s, response);
-                getPropertyValue(s, valueId, callback);
+                callback.success(s, response);
             }
 
             @Override
@@ -161,7 +159,7 @@ public class WikidataLookup {
         });
     }
 
-    private static void getPropertyValue(final String property, final String valueId, final Callback<AbstractMap.SimpleEntry<String, String>> callback) {
+    public static void getPropertyValue(final String property, final String valueId, final Callback<AbstractMap.SimpleEntry<String, String>> callback) {
         WikidataLookup.getLabel("Q" + valueId, new Callback<String>() {
             @Override
             public void success(String label, Response response) {

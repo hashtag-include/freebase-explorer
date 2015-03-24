@@ -103,7 +103,7 @@ public class EntityModel {
             claimModels[r] = claim;
 
             if(claim.getMainsnak().getDatatype().equals("wikibase-item")) {
-                WikidataLookup.getProperty(claim.getMainsnak().getProperty(), ((ClaimModel.DataValueWikibaseItem)(claim.getMainsnak().
+                WikidataLookup.getPropertyValue(claim.getMainsnak().getProperty(), ((ClaimModel.DataValueWikibaseItem)(claim.getMainsnak().
                         getDataValue())).getNumericId()+"",
                         new Callback<AbstractMap.SimpleEntry<String, String>>() {
                     @Override
