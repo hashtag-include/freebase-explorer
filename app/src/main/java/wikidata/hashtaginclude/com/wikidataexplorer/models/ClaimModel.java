@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
 import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
 
 /**
@@ -16,6 +17,16 @@ public class ClaimModel {
     Mainsnak mainsnak;
     String type;
     String rank;
+
+    EntityModel entityModel;
+
+    public enum DataType {
+        EMPTY,
+        VALUE,
+        QUANTITY,
+        WIKIITEM,
+        TIME
+    }
 
     public String getId() {
         return id;
@@ -49,14 +60,15 @@ public class ClaimModel {
         this.rank = rank;
     }
 
-    public ClaimModel(String id, Mainsnak mainsnak, String type, String rank) {
+    public ClaimModel(String id, Mainsnak mainsnak, String type, String rank, EntityModel entityModel) {
         this.id = id;
         this.mainsnak = mainsnak;
         this.type = type;
         this.rank = rank;
+        this.entityModel = entityModel;
     }
 
-    public static ClaimModel parse(JSONObject claimJSON) throws JSONException {
+    public static ClaimModel parse(JSONObject claimJSON, EntityModel entityModel) throws JSONException {
 
         String id = claimJSON.getString("id");
         String type = claimJSON.getString("type");
@@ -68,7 +80,8 @@ public class ClaimModel {
                 id,
                 mainsnak,
                 type,
-                rank);
+                rank,
+                entityModel);
     }
 
     public static class DataValue {
@@ -279,7 +292,7 @@ public class ClaimModel {
             this.numericId = numericId;
             this.type = type;
 
-            WikidataLookup.getLabel(Integer.toString(numericId), new Callback<String>() {
+            WikidataLookup.getLabel("Q"+Integer.toString(numericId), new Callback<String>() {
                 @Override
                 public void success(String s, Response response) {
                     numericText = s;
@@ -320,35 +333,45 @@ public class ClaimModel {
         public void setNumericId(int numericId) {
             this.numericId = numericId;
         }
+
+        public String getNumericText() {
+            return numericText;
+        }
     }
 
     public static class Mainsnak {
         String snaktype;
         String property;
         String propertyText;
-        String datatype;
+        DataType datatype;
         DataValue dataValue;
 
         public static Mainsnak parse(JSONObject mainsnakJSON) throws JSONException {
 
             String snakType = mainsnakJSON.getString("snaktype");
             String property = mainsnakJSON.getString("property");
-            String dataType = mainsnakJSON.getString("datatype");
+            String dataTypeJson = mainsnakJSON.getString("datatype");
+            DataType dataType = DataType.EMPTY;
             DataValue dataValue = null;
-            if(dataType.equals("time")) {
+            if(dataTypeJson.equals("time")) {
                 dataValue = DataValueTime.parse(mainsnakJSON.getJSONObject("datavalue"));
-            } else if(dataType.equals("quantity")) {
+                dataType = DataType.TIME;
+            } else if(dataTypeJson.equals("quantity")) {
                 dataValue = DataValueQuantity.parse(mainsnakJSON.getJSONObject("datavalue"));
-            } else if(dataType.equals("url")) {
+                dataType = DataType.QUANTITY;
+            } else if(dataTypeJson.equals("url")) {
                 dataValue = DataValueValue.parse(mainsnakJSON.getJSONObject("datavalue"));
-            } else if(dataType.equals("string")) {
+                dataType = DataType.VALUE;
+            } else if(dataTypeJson.equals("string")) {
                 dataValue = DataValueValue.parse(mainsnakJSON.getJSONObject("datavalue"));
-            } else if(dataType.equals("commonsMedia")) {
+                dataType = DataType.VALUE;
+            } else if(dataTypeJson.equals("commonsMedia")) {
                 dataValue = DataValueValue.parse(mainsnakJSON.getJSONObject("datavalue"));
-            } else if(dataType.equals("wikibase-item")) {
+                dataType = DataType.VALUE;
+            } else if(dataTypeJson.equals("wikibase-item")) {
                 dataValue = DataValueWikibaseItem.parse(mainsnakJSON.getJSONObject("datavalue"));
+                dataType = DataType.WIKIITEM;
             }
-            //DataValue dataValue = DataValue.parse(mainsnakJSON.getJSONObject("datavalue"));
 
             return new Mainsnak(
                     snakType,
@@ -361,7 +384,7 @@ public class ClaimModel {
         public Mainsnak() {
         }
 
-        public Mainsnak(String snaktype, String property, String datatype, DataValue dataValue) {
+        public Mainsnak(String snaktype, String property, DataType datatype, DataValue dataValue) {
             this.snaktype = snaktype;
             this.property = property;
             this.datatype = datatype;
@@ -400,11 +423,11 @@ public class ClaimModel {
             return propertyText;
         }
 
-        public String getDatatype() {
+        public DataType getDatatype() {
             return datatype;
         }
 
-        public void setDatatype(String datatype) {
+        public void setDatatype(DataType datatype) {
             this.datatype = datatype;
         }
 

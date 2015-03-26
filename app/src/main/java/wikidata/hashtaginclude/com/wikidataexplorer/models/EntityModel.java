@@ -14,6 +14,7 @@ import retrofit.RetrofitError;
 import retrofit.client.Response;
 import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
 import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
+import wikidata.hashtaginclude.com.wikidataexplorer.ui.entity.EntityFragment;
 
 /**
  * Created by matthewmichaud on 2/26/15.
@@ -33,6 +34,8 @@ public class EntityModel {
     ValueLanguageModel[] labels;
     ValueLanguageModel[] descriptions;
     ClaimModel[] claimModels;
+
+    EntityFragment.OnDataChangedListener onDataChangedListener;
 
     public static EntityModel parse(JSONObject entityJSON) throws JSONException {
         EntityModel entityModel = new EntityModel();
@@ -102,23 +105,21 @@ public class EntityModel {
             ClaimModel claim = ClaimModel.parse(claims.getJSONObject(r));
             claimModels[r] = claim;
 
-            if(claim.getMainsnak().getDatatype().equals("wikibase-item")) {
-                WikidataLookup.getPropertyValue(claim.getMainsnak().getProperty(), ((ClaimModel.DataValueWikibaseItem)(claim.getMainsnak().
-                        getDataValue())).getNumericId()+"",
-                        new Callback<AbstractMap.SimpleEntry<String, String>>() {
-                    @Override
-                    public void success(AbstractMap.SimpleEntry<String, String> entry, Response response) {
-                        WikidataLog.d(TAG, "property: " + entry.getKey()+", value: "+entry.getValue());
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        WikidataLog.e(TAG, "could not get property", error);
-                    }
-                });
-
-
-            }
+//            if(claim.getMainsnak().getDatatype().equals("wikibase-item")) {
+//                WikidataLookup.getPropertyValue(claim.getMainsnak().getProperty(), ((ClaimModel.DataValueWikibaseItem)(claim.getMainsnak().
+//                        getDataValue())).getNumericId()+"",
+//                        new Callback<AbstractMap.SimpleEntry<String, String>>() {
+//                    @Override
+//                    public void success(AbstractMap.SimpleEntry<String, String> entry, Response response) {
+//                        WikidataLog.d(TAG, "property: " + entry.getKey()+", value: "+entry.getValue());
+//                    }
+//
+//                    @Override
+//                    public void failure(RetrofitError error) {
+//                        WikidataLog.e(TAG, "could not get property", error);
+//                    }
+//                });
+//            }
         }
         entityModel.setClaimModels(claimModels);
 
