@@ -43,18 +43,12 @@ public class CategoryAdapter extends ArrayAdapter<String> {
         }
 
         viewHolder.categoryButton.setText(item);
-        viewHolder.categoryButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-            }
-        });
         return convertView;
     }
 
     protected static class ViewHolder {
         @InjectView(R.id.category_list_text)
-        Button categoryButton;
+        TextView categoryButton;
 
         public ViewHolder(View root) {
             ButterKnife.inject(this, root);

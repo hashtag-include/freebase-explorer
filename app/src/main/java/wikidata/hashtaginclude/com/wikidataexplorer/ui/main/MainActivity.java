@@ -40,6 +40,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     private ArrayList<DrawerItem> items;
     private DrawerLayout drawerLayout;
     private ListView drawerList;
+    private Menu menu;
     Toolbar toolbar;
 
     @Override
@@ -56,7 +57,7 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
         //  else start with the news
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
-                    .add(R.id.container, new BrowseFragment())
+                    .add(R.id.container, BrowseFragment.newInstance())
                     .commit();
         }
 
@@ -98,13 +99,22 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_main, menu);
 
+        this.menu = menu;
+
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
         MenuItem menuItem = menu.findItem(R.id.action_search);
         SearchView searchView = (SearchView) MenuItemCompat.getActionView(menuItem);
         ComponentName cn = new ComponentName(this, SearchResultsActivity.class);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(cn));
 
+        MenuItem refresh = menu.findItem(R.id.action_refresh);
+        refresh.setVisible(false);
+
         return true;
+    }
+
+    public Menu getMenu() {
+        return menu;
     }
 
     @Override
@@ -122,25 +132,38 @@ public class MainActivity extends ActionBarActivity implements AdapterView.OnIte
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         switch(position) {
             case 0: // profile
-
+                cleanActionBar();
                 break;
             case 1: // browse
-                getSupportFragmentManager().beginTransaction().replace(R.id.container, new BrowseFragment()).commit();
+                cleanActionBar();
+                getSupportFragmentManager().beginTransaction().replace(R.id.container, BrowseFragment.newInstance()).commit();
                 drawerLayout.closeDrawers();
                 break;
             case 2: // query
+                cleanActionBar();
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, new QueryFragment()).commit();
                 drawerLayout.closeDrawers();
                 break;
             case 3: // news
+                cleanActionBar();
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, new RecentFragment()).commit();
                 drawerLayout.closeDrawers();
                 break;
             case 4: // random
+                cleanActionBar();
                 getSupportFragmentManager().beginTransaction().replace(R.id.container, new RandomFragment()).commit();
                 drawerLayout.closeDrawers();
                 break;
         }
+    }
+
+    private void cleanActionBar() {
+        if(getSupportActionBar()!=null) {
+            getSupportActionBar().setTitle("Wikidata Explorer");
+            getSupportActionBar().setSubtitle("");
+        }
+        getMenu().findItem(R.id.action_search).setVisible(true);
+        getMenu().findItem(R.id.action_refresh).setVisible(false);
     }
 
     @Override

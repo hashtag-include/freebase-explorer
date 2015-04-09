@@ -7,7 +7,7 @@
     android:layout_gravity="center"
     android:gravity="center"
     >
-    <Button
+    <TextView
         android:id="@+id/category_list_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"

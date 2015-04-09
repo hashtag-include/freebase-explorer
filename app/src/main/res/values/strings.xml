@@ -33,6 +33,7 @@
         api actions
     -->
     <string name="api_prompt"/>
+    <string name="action_refresh">Refresh</string>
     <string-array name="api_actions">
         <item>Choose an Action</item>
         <!--<item>abusefiltercheckmatch</item>

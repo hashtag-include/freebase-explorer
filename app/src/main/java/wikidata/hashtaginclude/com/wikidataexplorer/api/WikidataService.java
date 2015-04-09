@@ -59,4 +59,11 @@ public interface WikidataService {
             @Query("sitefilter") String siteFilter,
             @Query("format") String format,
             Callback<JsonElement> callback);
+
+    @GET("/w/api.php")
+    void getEntities(
+            @Query("action") String action,
+            @Query("ids") String ids,
+            @Query("format") String format,
+            Callback<JsonElement> callback);
 }

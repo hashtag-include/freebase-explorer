@@ -1,13 +1,19 @@
 package wikidata.hashtaginclude.com.wikidataexplorer.models;
 
+import android.util.Pair;
+
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.Iterator;
 
 import retrofit.Callback;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
 import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
 import wikidata.hashtaginclude.com.wikidataexplorer.api.WikidataLookup;
+import wikidata.hashtaginclude.com.wikidataexplorer.ui.entity.EntityFragment;
 
 /**
  * Created by matthewmichaud on 3/3/15.
@@ -17,12 +23,13 @@ public class ClaimModel {
     Mainsnak mainsnak;
     String type;
     String rank;
-
-    EntityModel entityModel;
+    References references;
 
     public enum DataType {
         EMPTY,
         VALUE,
+        URL,
+        STRING,
         QUANTITY,
         WIKIITEM,
         TIME
@@ -60,28 +67,32 @@ public class ClaimModel {
         this.rank = rank;
     }
 
-    public ClaimModel(String id, Mainsnak mainsnak, String type, String rank, EntityModel entityModel) {
+    public ClaimModel(String id, Mainsnak mainsnak, String type, String rank, References references) {
         this.id = id;
         this.mainsnak = mainsnak;
         this.type = type;
         this.rank = rank;
-        this.entityModel = entityModel;
+        this.references = references;
     }
 
-    public static ClaimModel parse(JSONObject claimJSON, EntityModel entityModel) throws JSONException {
+    public static ClaimModel parse(JSONObject claimJSON) throws JSONException {
 
         String id = claimJSON.getString("id");
         String type = claimJSON.getString("type");
         String rank = claimJSON.getString("rank");
 
         Mainsnak mainsnak = Mainsnak.parse(claimJSON.getJSONObject("mainsnak"));
+        References references = null;
+        if(claimJSON.has("references")) {
+            references = References.parse(claimJSON.getJSONArray("references"));
+        }
 
         return new ClaimModel(
                 id,
                 mainsnak,
                 type,
                 rank,
-                entityModel);
+                references);
     }
 
     public static class DataValue {
@@ -282,7 +293,7 @@ public class ClaimModel {
     public static class DataValueWikibaseItem extends DataValue {
         String entityType;
         int numericId;
-        String numericText;
+        String numericText = "loading";
 
         public DataValueWikibaseItem() {
         }
@@ -342,7 +353,7 @@ public class ClaimModel {
     public static class Mainsnak {
         String snaktype;
         String property;
-        String propertyText;
+        String propertyText = "loading";
         DataType datatype;
         DataValue dataValue;
 
@@ -361,10 +372,10 @@ public class ClaimModel {
                 dataType = DataType.QUANTITY;
             } else if(dataTypeJson.equals("url")) {
                 dataValue = DataValueValue.parse(mainsnakJSON.getJSONObject("datavalue"));
-                dataType = DataType.VALUE;
+                dataType = DataType.URL;
             } else if(dataTypeJson.equals("string")) {
                 dataValue = DataValueValue.parse(mainsnakJSON.getJSONObject("datavalue"));
-                dataType = DataType.VALUE;
+                dataType = DataType.STRING;
             } else if(dataTypeJson.equals("commonsMedia")) {
                 dataValue = DataValueValue.parse(mainsnakJSON.getJSONObject("datavalue"));
                 dataType = DataType.VALUE;
@@ -394,6 +405,7 @@ public class ClaimModel {
                 @Override
                 public void success(String s, Response response) {
                     propertyText = s;
+                    EntityFragment.bus.post(new EntityFragment.DataChangedEvent(this));
                 }
 
                 @Override
@@ -439,5 +451,52 @@ public class ClaimModel {
             this.dataValue = dataValue;
         }
 
+    }
+
+    public static class References {
+        Reference[] references;
+
+        public static References parse(JSONArray referencesJSON) throws JSONException {
+            Reference[] references = new Reference[referencesJSON.length()];
+
+            for(int r = 0; r < referencesJSON.length(); r++) {
+                JSONObject jsonObject = referencesJSON.getJSONObject(r);
+                String hash = jsonObject.getString("hash");
+
+                JSONArray snaksJSON = jsonObject.getJSONArray("snaks");
+                Mainsnak[] snaks = new Mainsnak[snaksJSON.length()];
+
+                for(int i = 0; i < snaksJSON.length(); i++) {
+                    Mainsnak mainsnak = Mainsnak.parse(snaksJSON.getJSONObject(i));
+                    snaks[i++] = mainsnak;
+                }
+
+                JSONArray snaksOrderJSON = jsonObject.getJSONArray("snaks-order");
+                String[] snaksOrder = new String[snaksOrderJSON.length()];
+                for(int i = 0; i < snaksOrderJSON.length(); i++) {
+                    snaksOrder[i] = snaksOrderJSON.getString(i);
+                }
+
+                references[r++] = new Reference(hash, snaks, snaksOrder);
+            }
+
+            return new References(references);
+        }
+
+        public References(Reference[] references) {
+            this.references = references;
+        }
+
+        public static class Reference {
+            String hash;
+            Mainsnak[] snaks;
+            String[] snaksOrder;
+
+            public Reference(String hash, Mainsnak[] snaks, String[] snaksOrder) {
+                this.hash = hash;
+                this.snaks = snaks;
+                this.snaksOrder = snaksOrder;
+            }
+        }
     }
 }

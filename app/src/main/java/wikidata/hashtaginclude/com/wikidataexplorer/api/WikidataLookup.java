@@ -2,6 +2,8 @@ package wikidata.hashtaginclude.com.wikidataexplorer.api;
 
 import android.view.View;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonPrimitive;
@@ -18,7 +20,10 @@ import retrofit.Callback;
 import retrofit.RestAdapter;
 import retrofit.RetrofitError;
 import retrofit.client.Response;
+import retrofit.converter.GsonConverter;
+import retrofit.mime.TypedString;
 import wikidata.hashtaginclude.com.wikidataexplorer.WikidataLog;
+import wikidata.hashtaginclude.com.wikidataexplorer.models.ClaimQueryModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.GetEntityResponseModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.LabelListResponseModel;
 import wikidata.hashtaginclude.com.wikidataexplorer.models.RecentResponseModel;
@@ -32,16 +37,24 @@ public class WikidataLookup {
     private static String TAG = "WikidataLookup";
 
     static WikidataService wikidataService;
+    static WikidataQueryService wikidataQueryService;
 
     static Map<String, String> properties;
 
     static {
         RestAdapter restAdapter = new RestAdapter.Builder()
                 .setEndpoint("https://www.wikidata.org")
-                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .setLogLevel(RestAdapter.LogLevel.BASIC)
                 .build();
 
         wikidataService = restAdapter.create(WikidataService.class);
+
+        RestAdapter restQueryAdapter = new RestAdapter.Builder()
+                .setEndpoint("http://wdq.wmflabs.org")
+                .setLogLevel(RestAdapter.LogLevel.FULL)
+                .build();
+
+        wikidataQueryService = restQueryAdapter.create(WikidataQueryService.class);
 
         properties = new HashMap<String, String>();
     }
@@ -140,6 +153,11 @@ public class WikidataLookup {
                 ungroupedlist, siteFilter, "json", callback);
     }
 
+    public static void getEntities(String ids, Callback<JsonElement> callback) {
+        getEntities(ids, "", "", "yes", "info|sitelinks|aliases|labels|descriptions|claims|datatype", "en", "", "", "", "", callback);
+    }
+
+
     public static void getProperty(final String propertyId, final Callback<String> callback) {
         if (properties.containsKey(propertyId)) {
             callback.success(properties.get(properties), null);
@@ -176,5 +194,9 @@ public class WikidataLookup {
                 WikidataLog.e(TAG, "Could not get value from Q"+valueId, error);
             }
         });
+    }
+
+    public static void queryClaim(int item, int property, Callback<ClaimQueryModel> callback) {
+        wikidataQueryService.queryClaim(("CLAIM["+property+":"+item+"]"), callback);
     }
 }

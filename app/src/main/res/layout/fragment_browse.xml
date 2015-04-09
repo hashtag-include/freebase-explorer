@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
     <GridView
@@ -10,4 +10,13 @@
         android:verticalSpacing="16dp"
         android:horizontalSpacing="16dp"
         android:numColumns="2"/>
-</FrameLayout>
+    <ProgressBar
+        android:id="@+id/browse_loading"
+        android:layout_width="96dp"
+        android:layout_height="64dp"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="96dp"
+        android:background="@drawable/browse_loading_background"
+        android:visibility="gone"
+        android:indeterminate="true"/>
+</RelativeLayout>
