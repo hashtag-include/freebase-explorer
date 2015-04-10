@@ -141,6 +141,10 @@ public class WikidataLookup {
         wikidataService.searchEntities("wbsearchentities", search, "en", "item", 1, 0, "json", callback);
     }
 
+    public static void searchEntities(String search, int limit, Callback<SearchEntityResponseModel> callback) {
+        wikidataService.searchEntities("wbsearchentities", search, "en", "item", limit, 0, "json", callback);
+    }
+
     public static void searchEntities(String search, String language,
                                       String type, int limit, int continueQuery, Callback<SearchEntityResponseModel> callback) {
         wikidataService.searchEntities("wbsearchentities", search, language, type, limit, continueQuery, "json", callback);
