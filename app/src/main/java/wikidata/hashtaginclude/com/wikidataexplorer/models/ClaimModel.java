@@ -359,9 +359,18 @@ public class ClaimModel {
 
         public static Mainsnak parse(JSONObject mainsnakJSON) throws JSONException {
 
-            String snakType = mainsnakJSON.getString("snaktype");
-            String property = mainsnakJSON.getString("property");
-            String dataTypeJson = mainsnakJSON.getString("datatype");
+            String snakType = "";
+            if(mainsnakJSON.has("snaktype")) {
+                snakType = mainsnakJSON.getString("snaktype");
+            }
+            String property = "";
+            if(mainsnakJSON.has("property")) {
+                property = mainsnakJSON.getString("property");
+            }
+            String dataTypeJson = "";
+            if(mainsnakJSON.has("datatype")) {
+                dataTypeJson = mainsnakJSON.getString("datatype");
+            }
             DataType dataType = DataType.EMPTY;
             DataValue dataValue = null;
             if(dataTypeJson.equals("time")) {

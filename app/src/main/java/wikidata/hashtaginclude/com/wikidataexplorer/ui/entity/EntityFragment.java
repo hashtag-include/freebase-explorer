@@ -203,6 +203,10 @@ public class EntityFragment extends Fragment {
 
     private void redrawUI() {
 
+        if(entityModel==null) {
+            return;
+        }
+
         redrawAliases();
         if(entityModel.getAliases().length==0) {
             aliasesList.setVisibility(View.GONE);

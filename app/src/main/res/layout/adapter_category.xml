@@ -3,17 +3,15 @@
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="80dp"
-    android:layout_margin="16dp"
     android:layout_gravity="center"
-    android:gravity="center"
-    >
-    <TextView
+    android:gravity="center">
+    <Button
         android:id="@+id/category_list_text"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="@drawable/browse_category_button"
         android:gravity="center"
         android:layout_gravity="center"
-        android:textSize="22sp"
+        android:textSize="18sp"
         android:textColor="@android:color/white"/>
 </LinearLayout>

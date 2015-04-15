@@ -40,7 +40,8 @@ public class BrowseFragment extends Fragment {
 
     View root;
     GridView gridView;
-    ProgressBar browseLoading;
+    // TODO: dont do that
+    public static ProgressBar browseLoading;
     CategoryAdapter adapter;
 
     List<String> categories;
@@ -103,69 +104,6 @@ public class BrowseFragment extends Fragment {
 
         adapter = new CategoryAdapter(getActivity(), categories);
         gridView.setAdapter(adapter);
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, final int position, long id) {
-                WikidataLookup.searchEntities(categories.get(position), new Callback<SearchEntityResponseModel>() {
-                    @Override
-                    public void success(SearchEntityResponseModel searchEntityResponseModel, Response response) {
-                        browseLoading.setVisibility(View.VISIBLE);
-                        if(searchEntityResponseModel!=null) {
-                            if(searchEntityResponseModel.getSearchModels().size()>0) {
-                                final int id = Integer.parseInt(searchEntityResponseModel.getSearchModels().get(0).getId().replace("Q", ""));
-                                WikidataLookup.queryClaim(id, 279, new Callback<ClaimQueryModel>() {
-                                    @Override
-                                    public void success(final ClaimQueryModel claimQueryModel, Response response) {
-                                        if(claimQueryModel!=null) {
-                                            // Surprisingly enough, this works
-                                            if(claimQueryModel.getItems().length > 0) {
-                                                final ArrayList<String> titles = new ArrayList<String>();
-                                                for (int i = 0; i < claimQueryModel.getItems().length; i++) {
-                                                    int id = claimQueryModel.getItems()[i];
-                                                    WikidataLookup.getLabel("Q" + id, new Callback<String>() {
-                                                        @Override
-                                                        public void success(String s, Response response) {
-                                                            titles.add(s);
-                                                            if (titles.size() == claimQueryModel.getItems().length) {
-                                                                BrowseFragment newFragment = BrowseFragment.newInstance(
-                                                                        titles
-                                                                );
-                                                                getActivity().getSupportFragmentManager().beginTransaction().replace(R.id.container,
-                                                                        newFragment).addToBackStack(null).commit();
-                                                            }
-                                                        }
-
-                                                        @Override
-                                                        public void failure(RetrofitError error) {
-                                                            browseLoading.setVisibility(View.GONE);
-                                                        }
-                                                    });
-                                                }
-                                            } else {
-                                                // we need to do something else here
-                                                browseLoading.setVisibility(View.GONE);
-                                                getTheThingsInstead("Q"+id);
-                                            }
-                                        }
-                                    }
-
-                                    @Override
-                                    public void failure(RetrofitError error) {
-                                        browseLoading.setVisibility(View.GONE);
-                                    }
-                                });
-                            }
-                        }
-                    }
-
-                    @Override
-                    public void failure(RetrofitError error) {
-                        browseLoading.setVisibility(View.GONE);
-                    }
-                });
-
-            }
-        });
 
         return root;
     }
